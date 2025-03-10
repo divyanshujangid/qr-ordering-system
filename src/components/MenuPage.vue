@@ -30,7 +30,7 @@
           >
             <div class="item-details">
               <h4>{{ item.name }}</h4>
-              <p class="item-price">${{ item.price.toFixed(2) }}</p>
+              <p class="item-price">₹ {{ item.price.toFixed(2) }}</p>
             </div>
             <button class="add-button" @click="addToOrder(item)">
               <span class="button-icon">+</span> Add
@@ -66,7 +66,7 @@
             >
               <div class="order-item-details">
                 <h4>{{ item.name }}</h4>
-                <p class="item-price">${{ item.price.toFixed(2) }}</p>
+                <p class="item-price">₹ {{ item.price.toFixed(2) }}</p>
               </div>
               
               <div class="order-item-actions">
@@ -92,7 +92,7 @@
           <div class="order-summary">
             <div class="order-total">
               <span>Total</span>
-              <span class="total-amount">${{ store.getOrderTotal().toFixed(2) }}</span>
+              <span class="total-amount">₹ {{ store.getOrderTotal().toFixed(2) }}</span>
             </div>
             
             <button class="submit-button" @click="submitOrder">
@@ -154,14 +154,23 @@ export default {
       store.setTableNumber(this.selectedTable);
     },
     submitOrder() {
-      const orderSummary = store.submitOrder();
-      if (orderSummary) {
-        alert(`Order placed successfully! Your order number is #${orderSummary.id.toString().slice(-4)}`);
-        // You might want to redirect to a confirmation page
+  const orderSummary = store.submitOrder();
+  if (orderSummary) {
+    // Using SweetAlert2 instead of standard alert
+    import('sweetalert2').then((Swal) => {
+      Swal.default.fire({
+        icon: 'success',
+        title: 'Order Placed!',
+        text: `Your order number is #${orderSummary.id.toString().slice(-4)}`,
+        confirmButtonColor: '#42b983',
+      }).then(() => {
+        // Redirect after the user closes the alert
         this.$router.push('/history');
-      }
-    }
+      });
+    });
   }
+  }
+}
 }
 </script>
 

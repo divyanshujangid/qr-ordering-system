@@ -2,7 +2,7 @@
 <template>
   <div id="app">
     <header>
-      <h1>Café QR Ordering System</h1>
+      <h1>Welcome to Green Palace – A Taste of Perfection!</h1>
       <nav>
         <router-link to="/">Menu</router-link>
         <router-link to="/history">Order History</router-link>

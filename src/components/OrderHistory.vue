@@ -28,7 +28,7 @@
             <h3>Order #{{ order.id.slice(-4) }}</h3>
             <p class="order-date">{{ formatDate(order.submittedAt) }}</p>
           </div>
-          <div class="order-total">${{ order.totalAmount.toFixed(2) }}</div>
+          <div class="order-total">₹ {{ order.totalAmount.toFixed(2) }}</div>
         </div>
         
         <div class="order-details">
@@ -39,7 +39,7 @@
                 <span class="item-quantity">{{ item.quantity }}x</span>
                 <span class="item-name">{{ item.name }}</span>
               </div>
-              <span class="item-price">${{ (item.price * item.quantity).toFixed(2) }}</span>
+              <span class="item-price">₹ {{ (item.price * item.quantity).toFixed(2) }}</span>
             </li>
           </ul>
         </div>

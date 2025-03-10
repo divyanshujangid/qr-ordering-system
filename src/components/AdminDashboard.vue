@@ -36,7 +36,7 @@
           </div>
           
           <div class="form-group">
-            <label for="item-price">Price ($):</label>
+            <label for="item-price">Price (₹):</label>
             <input 
               id="item-price" 
               v-model.number="editingItem.price" 
@@ -101,7 +101,7 @@
               <tbody>
                 <tr v-for="item in getItemsByCategory(category)" :key="item.id">
                   <td>{{ item.name }}</td>
-                  <td>${{ item.price.toFixed(2) }}</td>
+                  <td>₹ {{ item.price.toFixed(2) }}</td>
                   <td class="action-buttons">
                     <button class="edit-button" @click="editItem(item)">Edit</button>
                     <button class="delete-button" @click="deleteItem(item.id)">Delete</button>
@@ -118,7 +118,7 @@
     <div v-if="activeTab === 'orders'" class="tab-content">
       <h2>Order Management</h2>
       
-      <div class="order-filters">
+      <!-- <div class="order-filters">
         <label>
           Filter by status:
           <select v-model="orderStatusFilter">
@@ -127,7 +127,7 @@
             <option value="submitted">Submitted Orders</option>
           </select>
         </label>
-      </div>
+      </div> -->
       
       <div v-if="filteredOrders.length === 0" class="empty-message">
         No orders found matching the selected filter.
@@ -137,21 +137,21 @@
         <div v-for="order in filteredOrders" :key="order.id" class="order-card">
           <div class="order-header">
             <h3>Order #{{ order.id.slice(-4) }}</h3>
-            <span :class="['status-badge', order.status]">{{ order.status }}</span>
+            <!-- <span :class="['status-badge', order.status]">{{ order.status }}</span> -->
           </div>
           
           <div class="order-details">
             <p><strong>Table:</strong> {{ order.tableNumber }}</p>
             <p><strong>Created:</strong> {{ formatDate(order.createdAt) }}</p>
             <p v-if="order.submittedAt"><strong>Submitted:</strong> {{ formatDate(order.submittedAt) }}</p>
-            <p><strong>Total:</strong> ${{ order.totalAmount.toFixed(2) }}</p>
+            <p><strong>Total:</strong> ₹{{ order.totalAmount.toFixed(2) }}</p>
           </div>
           
           <div class="order-items">
             <h4>Items</h4>
             <ul>
               <li v-for="item in order.items" :key="item.id">
-                {{ item.quantity }}x {{ item.name }} - ${{ (item.price * item.quantity).toFixed(2) }}
+                {{ item.quantity }}x {{ item.name }} - ₹{{ (item.price * item.quantity).toFixed(2) }}
               </li>
             </ul>
           </div>
