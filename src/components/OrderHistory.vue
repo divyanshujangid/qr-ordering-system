@@ -135,7 +135,6 @@ export default {
   background-color: #e5e5e5;
 }
 
-/* Loading state */
 .loading {
   display: flex;
   flex-direction: column;
@@ -158,7 +157,6 @@ export default {
   100% { transform: rotate(360deg); }
 }
 
-/* Empty state */
 .empty-history {
   text-align: center;
   padding: 40px 20px;
@@ -197,7 +195,6 @@ export default {
   background-color: #3aa876;
 }
 
-/* Order cards */
 .orders-container {
   display: flex;
   flex-direction: column;
@@ -305,7 +302,6 @@ export default {
   background-color: #3aa876;
 }
 
-/* Responsive design */
 @media (max-width: 600px) {
   .page-header {
     flex-direction: column;

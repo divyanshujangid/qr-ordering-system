@@ -17,11 +17,9 @@
       </button>
     </div>
     
-    <!-- Menu Management Tab -->
     <div v-if="activeTab === 'menu'" class="tab-content">
       <h2>Menu Items</h2>
       
-      <!-- Add/Edit Menu Item Form -->
       <div class="form-container">
         <h3>{{ editingItem.id ? 'Edit Item' : 'Add New Item' }}</h3>
         <form @submit.prevent="saveMenuItem">
@@ -79,7 +77,7 @@
         </form>
       </div>
       
-      <!-- Menu Items List -->
+
       <div class="menu-items-list">
         <h3>Current Menu</h3>
         
@@ -169,10 +167,8 @@ import localStorageDB from '../services/localStorageDB';
 export default {
   name: 'AdminPage',
   setup() {
-    // Tab state
     const activeTab = ref('menu');
     
-    // Menu management state
     const editingItem = ref({
       name: '',
       price: 0,
@@ -180,11 +176,9 @@ export default {
     });
     const newCategory = ref('');
     
-    // Orders management state
     const orderStatusFilter = ref('all');
     const orders = ref([]);
-    
-    // Load all orders on mount
+
     onMounted(() => {
       loadOrders();
     });
@@ -194,7 +188,6 @@ export default {
       orders.value = localStorageDB.getData('restaurant_orders') || [];
     };
     
-    // Computed properties
     const categories = computed(() => {
       return [...new Set(store.menu.map(item => item.category))];
     });
@@ -205,8 +198,7 @@ export default {
       }
       return orders.value.filter(order => order.status === orderStatusFilter.value);
     });
-    
-    // Methods
+
     const getItemsByCategory = (category) => {
       return store.menu.filter(item => item.category === category);
     };
@@ -225,15 +217,13 @@ export default {
     };
     
     const saveMenuItem = () => {
-      // Handle new category
+
       if (editingItem.value.category === 'new' && newCategory.value) {
         editingItem.value.category = newCategory.value;
       }
       
-      // Save the item
       store.updateMenuItem(editingItem.value);
-      
-      // Reset form
+
       resetForm();
     };
     
@@ -279,8 +269,6 @@ h1 {
   color: #2c3e50;
   margin-bottom: 20px;
 }
-
-/* Tabs */
 .admin-tabs {
   display: flex;
   margin-bottom: 20px;
@@ -310,7 +298,6 @@ h1 {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Form styles */
 .form-container {
   background-color: #f9f9f9;
   border-radius: 8px;
@@ -362,7 +349,6 @@ h1 {
   cursor: pointer;
 }
 
-/* Menu items list */
 .menu-items-list {
   margin-top: 30px;
 }
@@ -418,7 +404,6 @@ th {
   color: white;
 }
 
-/* Orders list */
 .order-filters {
   margin-bottom: 20px;
 }

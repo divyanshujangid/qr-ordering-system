@@ -1,4 +1,3 @@
-<!-- src/App.vue -->
 <template>
   <div id="app">
     <header>
@@ -8,6 +7,8 @@
         <router-link to="/history">Order History</router-link>
         <router-link to="/admin">Admin</router-link>
         <router-link to="/qr">Generate QR</router-link>
+        <!-- <router-link to="/payment">Make a Payment</router-link> -->
+        <!-- <router-link to="/checkout">Checkout</router-link>  -->
       </nav>
     </header>
     

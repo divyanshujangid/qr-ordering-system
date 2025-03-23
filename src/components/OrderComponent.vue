@@ -1,9 +1,7 @@
-// src/components/OrderComponent.vue
 <script>
 import { createCheckoutSession } from '../services/payment';
 
 export default {
-  // existing code...
   methods: {
     async proceedToCheckout() {
       try {

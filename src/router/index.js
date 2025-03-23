@@ -5,6 +5,9 @@ import Menu from '../components/MenuPage.vue'
 import OrderHistory from '../components/OrderHistory.vue'
 import AdminDashboard from '../components/AdminDashboard.vue'
 import QRCodeGenerator from '../components/QRCodeGenerator.vue'
+// import StripeCheckout from '../components/StripeCheckout.vue';
+import PaymentCheckout  from '@/components/RazorpayPayment.vue';
+import ReceiptModal from '../components/ReceiptModal.vue';
 
 Vue.use(VueRouter)
 
@@ -34,7 +37,23 @@ const routes = [
     path: '/qr',
     name: 'QRCode',
     component: QRCodeGenerator
-  }
+  },
+  // { 
+  //   path: '/payment',
+  //   name: 'Payment',
+  //    component: StripeCheckout
+
+  //  },
+   {
+    path: '/checkout',
+    name: 'checkout',
+    component: PaymentCheckout
+  },
+  { 
+    path: '/receipt',
+     component: ReceiptModal
+
+   }
 ]
 
 const router = new VueRouter({

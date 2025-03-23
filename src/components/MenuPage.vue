@@ -7,6 +7,14 @@
       </div>
     </div>
     
+    <!-- Order Placed Receipt Modal -->
+    <ReceiptModal
+      :currentOrder="currentOrder"
+      :isVisible="showReceipt"
+      @closeReceipt="showReceipt = false"
+      @startNewOrder="startNewOrder"
+    />
+    
     <div class="content-container">
       <div class="menu-section">
         <h2>Our Menu</h2>
@@ -106,9 +114,13 @@
 </template>
 
 <script>
+import ReceiptModal from './ReceiptModal.vue';
 import { store } from '../orders.js'
 
 export default {
+  components: {
+    ReceiptModal
+  },
   name: 'MenuPage',
   props: {
     tableNumber: {
@@ -120,14 +132,21 @@ export default {
     return {
       store,
       selectedTable: 1,
-      selectedCategory: null
+      selectedCategory: null,
+      showReceipt: false,
+      currentOrder: {
+        id: '',
+        timestamp: Date.now(),
+        items: [],
+        paymentMethod: 'Cash/Card on Delivery',
+        paymentStatus: 'Order Placed'
+      }
     }
   },
   created() {
     if (this.tableNumber) {
       store.setTableNumber(this.tableNumber);
     }
-    // Set default selected category to the first category
     if (this.categories.length > 0) {
       this.selectedCategory = this.categories[0];
     }
@@ -154,28 +173,71 @@ export default {
       store.setTableNumber(this.selectedTable);
     },
     submitOrder() {
-  const orderSummary = store.submitOrder();
-  if (orderSummary) {
-    // Using SweetAlert2 instead of standard alert
-    import('sweetalert2').then((Swal) => {
-      Swal.default.fire({
-        icon: 'success',
-        title: 'Order Placed!',
-        text: `Your order number is #${orderSummary.id.toString().slice(-4)}`,
-        confirmButtonColor: '#42b983',
-      }).then(() => {
-        // Redirect after the user closes the alert
-        this.$router.push('/history');
-      });
-    });
+      const orderSummary = store.submitOrder();
+      if (orderSummary) {
+        // Update the current order object with the submitted order details
+        this.currentOrder = {
+          ...orderSummary,
+          timestamp: Date.now(),
+          paymentMethod: 'Cash/Card on Delivery',
+          paymentStatus: 'Order Placed'
+        };
+        
+        // Show receipt modal
+        this.showReceipt = true;
+        
+        // Optionally, also show a success message
+        
+      }
+    },
+    closeReceipt() {
+      this.showReceipt = false;
+    },
+    startNewOrder() {
+      this.showReceipt = false;
+      store.clearOrder();
+      this.$router.push('/');
+    },
+    printReceipt() {
+  const receiptContent = document.querySelector('.receipt-content').innerHTML;
+  const printWindow = window.open('', '_blank', 'width=400,height=600');
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Print Receipt</title>
+        <style>
+          body { font-family: 'Arial', sans-serif; font-size: 12px; }
+          .receipt-content { width: 300px; margin: 0 auto; }
+          /* Add other styles as needed */
+        </style>
+      </head>
+      <body>
+        ${receiptContent}
+      </body>
+    </html>
+  `);
+      
+      printWindow.document.close();
+    },
+    formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    },
+    calculateSubtotal() {
+      return this.currentOrder.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    },
+    calculateTax() {
+      return this.calculateSubtotal() * 0.05; // 5% tax
+    },
+    calculateTotal() {
+      return this.calculateSubtotal() + this.calculateTax();
+    }
   }
-  }
-}
 }
 </script>
 
 <style scoped>
-/* Main layout */
 .restaurant-app {
   display: flex;
   flex-direction: column;
@@ -183,6 +245,7 @@ export default {
   margin: 0 auto;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+  position: relative;
 }
 
 .content-container {
@@ -198,7 +261,6 @@ export default {
   }
 }
 
-/* Table info */
 .table-info {
   padding: 16px;
   background: linear-gradient(135deg, #3a8162, #42b983);
@@ -224,7 +286,6 @@ export default {
   font-size: 1.2rem;
 }
 
-/* Menu section */
 .menu-section, .order-section {
   background-color: white;
   border-radius: 12px;
@@ -243,11 +304,11 @@ h2 {
   position: relative;
 }
 
-/* Category tabs */
 .category-tabs {
-  display: flex;
+  width: 30%;
+  display:block;
   flex-wrap: wrap;
-  gap: 8px;
+  /* gap: 8px; */
   margin-bottom: 24px;
   border-bottom: 1px solid #eee;
   padding-bottom: 12px;
@@ -274,7 +335,6 @@ h2 {
   color: white;
 }
 
-/* Menu items */
 .menu-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -335,7 +395,6 @@ h2 {
   font-size: 1.1rem;
 }
 
-/* Table selection */
 .table-selection {
   background-color: #f8f9fa;
   border-radius: 10px;
@@ -379,7 +438,6 @@ h2 {
   background-color: #389e70;
 }
 
-/* Empty order */
 .empty-order {
   text-align: center;
   padding: 40px 20px;
@@ -398,7 +456,6 @@ h2 {
   margin-top: 8px;
 }
 
-/* Order items */
 .order-content {
   display: flex;
   flex-direction: column;
@@ -437,7 +494,6 @@ h2 {
   gap: 10px;
 }
 
-/* Quantity controls */
 .quantity-controls {
   display: flex;
   align-items: center;
@@ -499,7 +555,6 @@ h2 {
   font-size: 0.9rem;
 }
 
-/* Order summary */
 .order-summary {
   border-top: 1px solid #eee;
   padding-top: 16px;
@@ -538,5 +593,155 @@ h2 {
 
 .submit-button:active {
   transform: scale(0.98);
+}
+
+/* Receipt Modal Styles */
+.receipt-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.receipt-modal-content {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.receipt-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.close-button:hover {
+  color: #555;
+}
+
+.receipt-body {
+  padding: 16px;
+  flex-grow: 1;
+}
+
+.receipt-content {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.receipt-items {
+  border-top: 1px dashed #ccc;
+  border-bottom: 1px dashed #ccc;
+  padding: 10px 0;
+  margin: 10px 0;
+}
+
+.receipt-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.item-name-qty {
+  display: flex;
+}
+
+.qty {
+  width: 30px;
+}
+
+.receipt-summary {
+  margin-top: 15px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.total {
+  font-weight: bold;
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: 1px solid #ddd;
+}
+
+.receipt-footer {
+  margin-top: 20px;
+  font-size: 0.7rem;
+  text-align: center;
+  color: #777;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid #eee;
+}
+
+.print-button, .new-order-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.print-button {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.print-button:hover {
+  background-color: #3a80d2;
+}
+
+.new-order-button {
+  background-color: #42b983;
+  color: white;
+}
+
+.new-order-button:hover {
+  background-color: #389e70;
+}
+
+.table-number {
+  font-weight: bold;
+  margin-top: 5px;
 }
 </style>
